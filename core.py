@@ -12,7 +12,9 @@ def get_price():
     buy_price = price["buy"]
     return buy_price
 
-# manager.set_price(get_price())
-# res = manager.get_average_price(manager.get_price_today(), 10)
-# print(res)
-
+price = get_price()
+res = manager.is_biggest_price(price)
+low = manager.is_biggest_price(price)
+print(res)
+print(low)
+manager.set_price(price)

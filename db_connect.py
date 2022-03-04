@@ -13,7 +13,7 @@ class DB:
     def insert(self, data):
         self.table.insert_one(data)
 
-    def get(self, query):
+    def get(self, query=None):
         data = self.table.find(query)
         return data
 
@@ -73,7 +73,43 @@ class DbManager:
         average = sum_prices / limit
         return round(average, 2)
 
+    def get_last_x_records(self, number):
+        records = self.db.get()
+        sorted_records = self.db.sort(records, "created_time")
+        limited_records = sorted_records.limit(number)
+        return [record for record in limited_records]
 
 
+    def is_biggest_price(self, price):
+        now = datetime.now()
+        today = now - timedelta(hours=now.hour, minutes=now.minute, seconds=now.second)
+        result = self.db.get({
+            "price": {
+                "$gt": price,
+            },
+            "created_time":{
+                "$gt": today
+            }
+        })
+        r = [res for res in result]
+        if len(r) > 0:
+            return False
+        else:
+            return True
 
-    
+    def is_lowest_price(self, price):
+        now = datetime.now()
+        today = now - timedelta(hours=now.hour, minutes=now.minute, seconds=now.second)
+        result = self.db.get({
+            "price": {
+                "$lt": price,
+            },
+            "created_time":{
+                "$gt": today
+            }
+        })
+        r = [res for res in result]
+        if len(r) > 0:
+            return False
+        else:
+            return True
